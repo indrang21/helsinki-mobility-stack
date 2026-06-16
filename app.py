@@ -48,31 +48,41 @@ def fetch_hsl_data():
 # IN-MEMORY DUCKDB WITH MEDALLION ARCHITECTURE
 # ============================================================
 @st.cache_resource(show_spinner=False)
-def build_database(stops, routes):
+def build_database(_stops, _routes):
+    import pandas as pd
+    
     con = duckdb.connect(":memory:")
+    
+    # Convert API data to DataFrames
+    stops_df = pd.DataFrame(_stops)
+    routes_df = pd.DataFrame(_routes)
+    
+    # Register as DuckDB tables
+    con.register("stops_raw", stops_df)
+    con.register("routes_raw", routes_df)
     
     # Bronze layer
     con.execute("CREATE SCHEMA raw")
     con.execute("""
         CREATE TABLE raw.stops AS
         SELECT 
-            stop_data->>'gtfsId' AS gtfs_id,
-            stop_data->>'name' AS name,
-            CAST(stop_data->>'lat' AS DOUBLE) AS lat,
-            CAST(stop_data->>'lon' AS DOUBLE) AS lon,
-            stop_data->>'vehicleMode' AS vehicle_mode
-        FROM (SELECT UNNEST(?::JSON[]) AS stop_data)
-    """, [json.dumps(stops)])
+            gtfsId AS gtfs_id,
+            name,
+            CAST(lat AS DOUBLE) AS lat,
+            CAST(lon AS DOUBLE) AS lon,
+            vehicleMode AS vehicle_mode
+        FROM stops_raw
+    """)
     
     con.execute("""
         CREATE TABLE raw.routes AS
         SELECT 
-            route_data->>'gtfsId' AS gtfs_id,
-            route_data->>'shortName' AS short_name,
-            route_data->>'longName' AS long_name,
-            route_data->>'mode' AS mode
-        FROM (SELECT UNNEST(?::JSON[]) AS route_data)
-    """, [json.dumps(routes)])
+            gtfsId AS gtfs_id,
+            shortName AS short_name,
+            longName AS long_name,
+            mode
+        FROM routes_raw
+    """)
     
     # Silver layer
     con.execute("CREATE SCHEMA staging")
