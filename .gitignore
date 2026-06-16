@@ -1,0 +1,30 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment
+.env
+
+# Data files
+data/raw/
+
+# DuckDB
+helsinki.db
+
+# dbt
+helsinki_dbt/target/
+helsinki_dbt/dbt_packages/
+helsinki_dbt/logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# OneDrive
+*.tmp

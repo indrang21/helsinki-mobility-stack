@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: stg_stops
+    description: "Cleaned Helsinki stops — invalid coordinates filtered, nulls handled"
+    columns:
+      - name: gtfs_id
+        description: "Unique stop ID from HSL"
+        tests:
+          - not_null
+          - unique
+      - name: stop_name
+        description: "Trimmed stop name"
+      - name: latitude
+        tests:
+          - not_null
+      - name: longitude
+        tests:
+          - not_null
+      - name: vehicle_mode
+        tests:
+          - not_null
+  
+  - name: stg_routes
+    description: "Cleaned Helsinki routes — null short_names filtered out at staging"
+    columns:
+      - name: gtfs_id
+        tests:
+          - not_null
+          - unique
+      - name: short_name
+        description: "Route short name — guaranteed non-null after staging cleanup"
+        tests:
+          - not_null
+      - name: route_type_name
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Tram', 'Subway', 'Rail', 'Bus', 'Ferry', 'Suburban Rail', 'Bus Service', 'Regional Bus', 'Express Bus', 'Local Bus', 'Tram Service', 'Water Transport', 'Other']

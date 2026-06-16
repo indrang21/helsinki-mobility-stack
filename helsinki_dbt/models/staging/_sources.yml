@@ -1,0 +1,30 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    tables:
+      - name: stops
+        description: "Raw HSL stops loaded from JSON via load_to_duckdb.py"
+        columns:
+          - name: gtfs_id
+            description: "Unique stop identifier from HSL"
+            tests:
+              - not_null
+              - unique
+          - name: name
+            description: "Stop name"
+          - name: vehicle_mode
+            description: "BUS, TRAM, RAIL, etc"
+      
+      - name: routes
+        description: "Raw HSL routes loaded from JSON"
+        columns:
+          - name: gtfs_id
+            description: "Unique route identifier"
+            tests:
+              - not_null
+              - unique
+          - name: short_name
+            description: "Route short name"
+            

@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: stops_by_mode
+    description: "Aggregated stop counts and geographic centers per vehicle mode"
+    columns:
+      - name: vehicle_mode
+        description: "BUS, TRAM, RAIL, etc"
+        tests:
+          - not_null
+          - unique
+      - name: total_stops
+        description: "Total number of stops for this mode"
+        tests:
+          - not_null
+
+  - name: stops_central_helsinki
+    description: "Stops within 2km of Helsinki central railway station"
+    columns:
+      - name: gtfs_id
+        tests:
+          - not_null
+          - unique
+      - name: distance_from_center_m
+        description: "Distance from Helsinki center in meters"
+        tests:
+          - not_null
